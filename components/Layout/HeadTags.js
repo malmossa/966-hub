@@ -12,7 +12,12 @@ const HeadTags = () => (
       <link rel="stylesheet" type="text/css" href="/styles.css" />
       <link rel="stylesheet" type="text/css" href="/nprogress.css" />
 
-      <title>Mini Social Media</title>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Tajawal:wght@200;300;400;500;700&display=swap"
+        rel="stylesheet"
+      ></link>
+
+      <title>966 - HUB</title>
     </Head>
   </>
 );

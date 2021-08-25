@@ -6,6 +6,20 @@ body {
   background: var(--bodyBg);
 }
 
+.ui * {
+  direction: rtl;
+  text-align: right;
+  font-family: "Tajawal", sans-serif;
+}
+
+.ui.form input {
+  font-family: "Tajawal", sans-serif !important;
+}
+
+.ui button {
+  font-family: "Tajawal", sans-serif !important;
+}
+
 .spanLikesList:hover {
   text-decoration: underline;
   cursor: pointer;
