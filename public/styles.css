@@ -19,6 +19,9 @@ body {
 .ui button {
   font-family: "Tajawal", sans-serif !important;
 }
+.header {
+  font-family: "Tajawal", sans-serif !important;
+}
 
 .spanLikesList:hover {
   text-decoration: underline;
