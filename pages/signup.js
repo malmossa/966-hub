@@ -13,6 +13,8 @@ import {
   FooterMessage,
 } from "../components/Shared/WelcomeMessage";
 
+const regexUserName = /^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{0,29}$/;
+
 function Signup() {
   const [user, setUser] = useState({
     name: "",
@@ -35,13 +37,14 @@ function Signup() {
 
   const [username, setusername] = useState(" ");
   const [usernameLoading, setusernameLoading] = useState(false);
-  const [usenameAvailable, setusenameAvailable] = useState(false);
+  const [userameAvailable, setuserameAvailable] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
 
     setUser((prev) => ({ ...prev, [name]: value }));
   };
+
   const handleSubmit = (e) => e.prventDefault();
 
   return (
@@ -101,6 +104,26 @@ function Signup() {
             }}
             iconPosition="left"
             type={showPassword ? "text" : "password"}
+          />
+
+          <Form.Input
+            loading={usernameLoading}
+            error={!userameAvailable}
+            required
+            label="اسم المستخدم"
+            placeholder="اسم المستخدم"
+            value={username}
+            onChange={(e) => {
+              setusername(e.target.value);
+              if (regexUserName.test(e.target.value)) {
+                setuserameAvailable(true);
+              } else {
+                setuserameAvailable(false);
+              }
+            }}
+            fluid
+            icon={userameAvailable ? "check" : "close"}
+            iconPosition="left"
           />
         </Segment>
       </Form>
