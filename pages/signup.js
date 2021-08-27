@@ -6,12 +6,14 @@ import {
   Segment,
   TextArea,
   Divider,
+  Item,
 } from "semantic-ui-react";
 
 import {
   HeaderMessage,
   FooterMessage,
 } from "../components/Shared/WelcomeMessage";
+import SharedInputs from "../components/Shared/SharedInputs";
 
 const regexUserName = /^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{0,29}$/;
 
@@ -38,6 +40,7 @@ function Signup() {
   const [username, setusername] = useState(" ");
   const [usernameLoading, setusernameLoading] = useState(false);
   const [userameAvailable, setuserameAvailable] = useState(false);
+  const [submitDisabled, setsubmitDisabled] = useState(true);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -46,6 +49,13 @@ function Signup() {
   };
 
   const handleSubmit = (e) => e.prventDefault();
+
+  useEffect(() => {
+    const isUser = Object.values({ name, email, password }).every((item) =>
+      Boolean(item)
+    );
+    isUser ? setsubmitDisabled(false) : setsubmitDisabled(true);
+  }, [user]);
 
   return (
     <>
@@ -124,6 +134,22 @@ function Signup() {
             fluid
             icon={userameAvailable ? "check" : "close"}
             iconPosition="left"
+          />
+
+          <SharedInputs
+            user={user}
+            showSocialLinks={showSocialLinks}
+            setshowSocialLinks={setshowSocialLinks}
+            handleChange={handleChange}
+          />
+
+          <Divider hidden />
+          <Button
+            icon="signup"
+            content="سجل"
+            type="submit"
+            color="olive"
+            disabled={submitDisabled || !userameAvailable}
           />
         </Segment>
       </Form>
