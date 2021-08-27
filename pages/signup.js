@@ -14,6 +14,7 @@ import {
   FooterMessage,
 } from "../components/Shared/WelcomeMessage";
 import SharedInputs from "../components/Shared/SharedInputs";
+import ImageDrop from "../components/Shared/ImageDrop";
 
 const regexUserName = /^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{0,29}$/;
 
@@ -32,21 +33,32 @@ function Signup() {
 
   const { name, email, password, bio } = user;
 
-  const [showSocialLinks, setshowSocialLinks] = useState(false);
-  const [showPassword, setshowPassword] = useState(false);
-  const [errorMsg, seterrorMsg] = useState(null);
-  const [fromLoading, setformLoading] = useState(false);
-
-  const [username, setusername] = useState(" ");
-  const [usernameLoading, setusernameLoading] = useState(false);
-  const [userameAvailable, setuserameAvailable] = useState(false);
-  const [submitDisabled, setsubmitDisabled] = useState(true);
-
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, files } = e.target;
+
+    if (name === "media") {
+      setMedia(files[0]);
+      setMediaPreview(URL.createObjectURL(files[0]));
+    }
 
     setUser((prev) => ({ ...prev, [name]: value }));
   };
+
+  const [showSocialLinks, setShowSocialLinks] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [errorMsg, setErrorMsg] = useState(null);
+  const [fromLoading, setFormLoading] = useState(false);
+
+  const [username, setUsername] = useState(" ");
+  const [usernameLoading, setUsernameLoading] = useState(false);
+  const [userameAvailable, setUserameAvailable] = useState(false);
+  const [submitDisabled, setSubmitDisabled] = useState(true);
+
+  // Drag n Drop image
+  const [media, setMedia] = useState(null);
+  const [mediaPreview, setMediaPreview] = useState(null);
+  const [highlighted, setHighlighted] = useState(false);
+  const inputRef = useRef();
 
   const handleSubmit = (e) => e.prventDefault();
 
@@ -54,7 +66,7 @@ function Signup() {
     const isUser = Object.values({ name, email, password }).every((item) =>
       Boolean(item)
     );
-    isUser ? setsubmitDisabled(false) : setsubmitDisabled(true);
+    isUser ? setSubmitDisabled(false) : setSubmitDisabled(true);
   }, [user]);
 
   return (
@@ -73,6 +85,15 @@ function Signup() {
         />
 
         <Segment>
+          <ImageDrop
+            mediaPreview={mediaPreview}
+            setMediaPreview={setMediaPreview}
+            setMedia={setMedia}
+            inputRef={inputRef}
+            highlighted={highlighted}
+            setHighlighted={setHighlighted}
+            handleChange={handleChange}
+          />
           <Form.Input
             required
             label="الإسم"
@@ -110,7 +131,7 @@ function Signup() {
               name: "eye",
               circular: true,
               link: true,
-              onClick: () => setshowPassword(!showPassword),
+              onClick: () => setShowPassword(!showPassword),
             }}
             iconPosition="left"
             type={showPassword ? "text" : "password"}
@@ -124,11 +145,11 @@ function Signup() {
             placeholder="اسم المستخدم"
             value={username}
             onChange={(e) => {
-              setusername(e.target.value);
+              setUsername(e.target.value);
               if (regexUserName.test(e.target.value)) {
-                setuserameAvailable(true);
+                setUserameAvailable(true);
               } else {
-                setuserameAvailable(false);
+                setUserameAvailable(false);
               }
             }}
             fluid
@@ -139,7 +160,7 @@ function Signup() {
           <SharedInputs
             user={user}
             showSocialLinks={showSocialLinks}
-            setshowSocialLinks={setshowSocialLinks}
+            setshowSocialLinks={setShowSocialLinks}
             handleChange={handleChange}
           />
 
