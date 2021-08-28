@@ -42,7 +42,11 @@ function ImageDrop({
         >
           {mediaPreview === null ? (
             <>
-              <Segment color={highlighted ? "olive" : ""} placeholder basic>
+              <Segment
+                {...(highlighted && { color: "olive" })}
+                placeholder
+                basic
+              >
                 <Header icon>
                   <Icon
                     name="file image outline"
