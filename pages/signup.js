@@ -48,11 +48,11 @@ function Signup() {
   const [showPassword, setShowPassword] = useState(false);
   const [errorMsg, setErrorMsg] = useState(null);
   const [fromLoading, setFormLoading] = useState(false);
+  const [submitDisabled, setSubmitDisabled] = useState(true);
 
   const [username, setUsername] = useState(" ");
   const [usernameLoading, setUsernameLoading] = useState(false);
   const [userameAvailable, setUserameAvailable] = useState(false);
-  const [submitDisabled, setSubmitDisabled] = useState(true);
 
   // Drag n Drop image
   const [media, setMedia] = useState(null);
@@ -121,8 +121,8 @@ function Signup() {
 
           <Form.Input
             required
-            label="البريد الإكتروني"
-            placeholder="البريد الإكتروني"
+            label="كلمة السر"
+            placeholder="كلمة السر"
             name="password"
             value={password}
             onChange={handleChange}
