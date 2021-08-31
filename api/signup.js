@@ -47,13 +47,13 @@ router.post("/", async (req, res) => {
   } = req.body.user;
 
   if (!isEmail(email)) return res.status(401).send("Invalid Email");
-  if ( password.length < 6 ) {
+  if (password.length < 6) {
     return res.status(401).send("Password most be atleast 6 charaters");
   }
 
   try {
     let user;
-    user = await UserModel.findOne({ email: email.toLowerCase()});
+    user = await UserModel.findOne({ email: email.toLowerCase() });
     if (user) {
       return res.status(401).send("User already registerd");
     }
@@ -63,15 +63,43 @@ router.post("/", async (req, res) => {
       email: email.toLowerCase(),
       username: username.toLowerCase(),
       password,
-      profilePicUrl: req.body.profilePicUrl || userPng
-    })
+      profilePicUrl: req.body.profilePicUrl || userPng,
+    });
 
     user.password = await bcrypt.hash(password, 10);
     await user.save();
 
+    let profileFields = {};
+    profileFields.user = user._id;
+    profileFields.bio = bio;
+
+    profileFields.social = {};
+    if (snapchat) profileFields.social.snapchat = snapchat;
+    if (twitter) profileFields.social.twitter = twitter;
+    if (instagram) profileFields.social.instagram = instagram;
+    if (facebook) profileFields.social.facebook = facebook;
+    if (youtube) profileFields.social.youtube = youtube;
+
+    await new ProfileModel(profileFields).save();
+    await new FollowerModel({
+      user: user._id,
+      followers: [],
+      following: [],
+    }).save();
+
+    const payload = { userId: user._id };
+    jwt.sign(
+      payload,
+      process.env.jwtSecret,
+      { expiresIn: "2d" },
+      (err, token) => {
+        if (err) throw err;
+        return res.status(200).json(token);
+      }
+    );
   } catch (error) {
     console.log(error);
-    return res.status(500).send("Server error"; )
+    return res.status(500).send("Server error");
   }
 });
 
