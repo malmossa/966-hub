@@ -15,7 +15,7 @@ const userPng =
 const regexUserName = /^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{0,29}$/;
 
 router.get("/:username", async (req, res) => {
-  const { username } = req.patams;
+  const { username } = req.params;
 
   try {
     if (username.length < 1) return res.status(401).send("Invalid");

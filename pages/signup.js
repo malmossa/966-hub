@@ -13,10 +13,13 @@ import {
   HeaderMessage,
   FooterMessage,
 } from "../components/Shared/WelcomeMessage";
+import axios from "axios";
+import baseUrl from "../utils/baseUrl";
 import SharedInputs from "../components/Shared/SharedInputs";
 import ImageDrop from "../components/Shared/ImageDrop";
 
 const regexUserName = /^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{0,29}$/;
+let cancel;
 
 function Signup() {
   const [user, setUser] = useState({
@@ -47,20 +50,18 @@ function Signup() {
   const [showSocialLinks, setShowSocialLinks] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [errorMsg, setErrorMsg] = useState(null);
-  const [fromLoading, setFormLoading] = useState(false);
+  const [formLoading, setFormLoading] = useState(false);
   const [submitDisabled, setSubmitDisabled] = useState(true);
 
-  const [username, setUsername] = useState(" ");
+  const [username, setUsername] = useState("");
   const [usernameLoading, setUsernameLoading] = useState(false);
-  const [userameAvailable, setUserameAvailable] = useState(false);
+  const [usernameAvailable, setUsernameAvailable] = useState(false);
 
   // Drag n Drop image
   const [media, setMedia] = useState(null);
   const [mediaPreview, setMediaPreview] = useState(null);
   const [highlighted, setHighlighted] = useState(false);
   const inputRef = useRef();
-
-  const handleSubmit = (e) => e.prventDefault();
 
   useEffect(() => {
     const isUser = Object.values({ name, email, password }).every((item) =>
@@ -69,19 +70,47 @@ function Signup() {
     isUser ? setSubmitDisabled(false) : setSubmitDisabled(true);
   }, [user]);
 
+  const checkUsername = async () => {
+    setUsernameLoading(true);
+    try {
+      cancel && cancel();
+
+      const CancelToken = axios.CancelToken;
+
+      const res = await axios.get(`${baseUrl}/api/signup/${username}`, {
+        cancelToken: new CancelToken((canceler) => {
+          cancel = canceler;
+        }),
+      });
+      if (res.data === "Available") {
+        setUsernameAvailable(true);
+        setUser((prev) => ({ ...prev, username }));
+      }
+    } catch (error) {
+      setErrorMsg("إسم المستخدم غير متوفر");
+    }
+    setUsernameLoading(false);
+  };
+
+  useEffect(() => {
+    username === "" ? setUsernameAvailable(false) : checkUsername();
+  }, [username]);
+
+  const handleSubmit = (e) => e.prventDefault();
+
   return (
     <>
       <HeaderMessage />
       <Form
-        loading={fromLoading}
+        loading={formLoading}
         error={errorMsg !== null}
         onSubmit={handleSubmit}
       >
         <Message
           error
-          header="Oops!"
+          header="المعذرة"
           content={errorMsg}
-          onDismiss={() => seterrorMsg(null)}
+          onDismiss={() => setErrorMsg(null)}
         />
 
         <Segment>
@@ -139,7 +168,7 @@ function Signup() {
 
           <Form.Input
             loading={usernameLoading}
-            error={!userameAvailable}
+            error={!usernameAvailable}
             required
             label="اسم المستخدم"
             placeholder="اسم المستخدم"
@@ -147,13 +176,13 @@ function Signup() {
             onChange={(e) => {
               setUsername(e.target.value);
               if (regexUserName.test(e.target.value)) {
-                setUserameAvailable(true);
+                setUsernameAvailable(true);
               } else {
-                setUserameAvailable(false);
+                setUsernameAvailable(false);
               }
             }}
             fluid
-            icon={userameAvailable ? "check" : "close"}
+            icon={usernameAvailable ? "check" : "close"}
             iconPosition="left"
           />
 
